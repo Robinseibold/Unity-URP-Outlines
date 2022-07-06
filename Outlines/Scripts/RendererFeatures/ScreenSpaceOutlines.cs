@@ -40,7 +40,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         public RenderTextureFormat colorFormat;
         public int depthBufferBits = 16;
         public FilterMode filterMode;
-        public Color backgroundColor;
+        public Color backgroundColor = Color.black;
 
         [Header("View Space Normal Texture Object Draw Settings")]
         public PerObjectData perObjectData;
@@ -78,7 +78,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
             normalsMaterial = new Material(Shader.Find("Hidden/ViewSpaceNormals"));
 
             occludersMaterial = new Material(Shader.Find("Hidden/UnlitColor"));
-            occludersMaterial.SetColor("_Color,", normalsTextureSettings.backgroundColor);
+            occludersMaterial.SetColor("_Color", normalsTextureSettings.backgroundColor);
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
@@ -178,12 +178,12 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
 
     }
 
-    [SerializeField] private RenderPassEvent renderPassEvent;
+    [SerializeField] private RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
     [SerializeField] private LayerMask outlinesLayerMask;
     [SerializeField] private LayerMask outlinesOccluderLayerMask;
     
-    [SerializeField] private ScreenSpaceOutlineSettings outlineSettings;
-    [SerializeField] private ViewSpaceNormalsTextureSettings viewSpaceNormalsTextureSettings;
+    [SerializeField] private ScreenSpaceOutlineSettings outlineSettings = new ScreenSpaceOutlineSettings();
+    [SerializeField] private ViewSpaceNormalsTextureSettings viewSpaceNormalsTextureSettings = new ViewSpaceNormalsTextureSettings();
 
     private ViewSpaceNormalsTexturePass viewSpaceNormalsTexturePass;
     private ScreenSpaceOutlinePass screenSpaceOutlinePass;
