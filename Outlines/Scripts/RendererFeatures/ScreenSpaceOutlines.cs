@@ -182,8 +182,8 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
     [SerializeField] private LayerMask outlinesLayerMask;
     [SerializeField] private LayerMask outlinesOccluderLayerMask;
     
-    [SerializeField] private ScreenSpaceOutlineSettings outlineSettings;
-    [SerializeField] private ViewSpaceNormalsTextureSettings viewSpaceNormalsTextureSettings;
+    [SerializeField] private ScreenSpaceOutlineSettings outlineSettings = new ScreenSpaceOutlineSettings();
+    [SerializeField] private ViewSpaceNormalsTextureSettings viewSpaceNormalsTextureSettings = new ViewSpaceNormalsTextureSettings();
 
     private ViewSpaceNormalsTexturePass viewSpaceNormalsTexturePass;
     private ScreenSpaceOutlinePass screenSpaceOutlinePass;
