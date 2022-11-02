@@ -8,6 +8,7 @@ for more specific implementation details see [YouTube video](https://youtu.be/LM
 - Enable depth texture in the Universal Render Pipeline Asset
 - Add the 'Screen Space Outlines' renderer feature to the Universal Renderer Data
 - Adjust 'Screen Space Outlines' settings
+- Go to Project Settings > Graphics and add the 3 new ones (Outlines, UnlitColor, and ViewSpaceNormals) to the list of Always Included Shaders. This is needed to make sure the shaders are included when building the project for a real device.
 
 ## Known Issues
 - Does not work with objects that utilizes displacement shaders, the normal texture generation does not take the displacement into account
