@@ -1,0 +1,6 @@
+{
+	"displayName": "URP Outline",
+	"name": "com.robinseibold.urp-outlines",
+	"version": "1.0.0",
+	"description": "A custom renderer feature for screen space outlines"
+}
