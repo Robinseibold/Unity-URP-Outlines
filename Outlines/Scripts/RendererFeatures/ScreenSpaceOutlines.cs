@@ -59,7 +59,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         private readonly Material normalsMaterial;
         private readonly Material occludersMaterial;
 
-        private readonly RenderTargetHandle normals;
+        private RTHandle normals;
 
         public ViewSpaceNormalsTexturePass(RenderPassEvent renderPassEvent, LayerMask layerMask, LayerMask occluderLayerMask, ViewSpaceNormalsTextureSettings settings) {
             this.renderPassEvent = renderPassEvent;
@@ -74,7 +74,6 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
                 new ShaderTagId("SRPDefaultUnlit")
             };
 
-            normals.Init("_SceneViewSpaceNormals");
             normalsMaterial = new Material(Shader.Find("Hidden/ViewSpaceNormals"));
 
             occludersMaterial = new Material(Shader.Find("Hidden/UnlitColor"));
@@ -85,9 +84,9 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
             RenderTextureDescriptor normalsTextureDescriptor = cameraTextureDescriptor;
             normalsTextureDescriptor.colorFormat = normalsTextureSettings.colorFormat;
             normalsTextureDescriptor.depthBufferBits = normalsTextureSettings.depthBufferBits;
-            cmd.GetTemporaryRT(normals.id, normalsTextureDescriptor, normalsTextureSettings.filterMode);
+            RenderingUtils.ReAllocateIfNeeded(ref normals, normalsTextureDescriptor, name: "_SceneViewSpaceNormals");
 
-            ConfigureTarget(normals.Identifier());
+            ConfigureTarget(normals);
             ConfigureClear(ClearFlag.All, normalsTextureSettings.backgroundColor);
         }
 
@@ -118,7 +117,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         }
 
         public override void OnCameraCleanup(CommandBuffer cmd) {
-            cmd.ReleaseTemporaryRT(normals.id);
+            normals.Release();
         }
 
     }
@@ -129,8 +128,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
 
         RenderTargetIdentifier cameraColorTarget;
 
-        RenderTargetIdentifier temporaryBuffer;
-        int temporaryBufferID = Shader.PropertyToID("_TemporaryBuffer");
+        RTHandle temporaryBuffer;
 
         public ScreenSpaceOutlinePass(RenderPassEvent renderPassEvent, ScreenSpaceOutlineSettings settings) {
             this.renderPassEvent = renderPassEvent;
@@ -151,10 +149,9 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData) {
             RenderTextureDescriptor temporaryTargetDescriptor = renderingData.cameraData.cameraTargetDescriptor;
             temporaryTargetDescriptor.depthBufferBits = 0;
-            cmd.GetTemporaryRT(temporaryBufferID, temporaryTargetDescriptor, FilterMode.Bilinear);
-            temporaryBuffer = new RenderTargetIdentifier(temporaryBufferID);
+            RenderingUtils.ReAllocateIfNeeded(ref temporaryBuffer, temporaryTargetDescriptor, FilterMode.Bilinear, name: "_TemporaryBuffer");
 
-            cameraColorTarget = renderingData.cameraData.renderer.cameraColorTarget;
+            cameraColorTarget = renderingData.cameraData.renderer.cameraColorTargetHandle;
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) {
@@ -164,8 +161,8 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
             CommandBuffer cmd = CommandBufferPool.Get();
             using (new ProfilingScope(cmd, new ProfilingSampler("ScreenSpaceOutlines"))) {
 
-                Blit(cmd, cameraColorTarget, temporaryBuffer);
-                Blit(cmd, temporaryBuffer, cameraColorTarget, screenSpaceOutlineMaterial);
+                Blitter.BlitCameraTexture(cmd, renderingData.cameraData.renderer.cameraColorTargetHandle, temporaryBuffer, screenSpaceOutlineMaterial, 0);
+                Blitter.BlitCameraTexture(cmd, temporaryBuffer, renderingData.cameraData.renderer.cameraColorTargetHandle);
             }
 
             context.ExecuteCommandBuffer(cmd);
@@ -173,7 +170,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         }
 
         public override void OnCameraCleanup(CommandBuffer cmd) {
-            cmd.ReleaseTemporaryRT(temporaryBufferID);
+            temporaryBuffer?.Release();
         }
 
     }
