@@ -116,7 +116,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
             CommandBufferPool.Release(cmd);
         }
 
-        public override void OnCameraCleanup(CommandBuffer cmd) {
+        public void Release(){
             normals.Release();
         }
 
@@ -169,7 +169,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
             CommandBufferPool.Release(cmd);
         }
 
-        public override void OnCameraCleanup(CommandBuffer cmd) {
+        public void Release(){
             temporaryBuffer?.Release();
         }
 
@@ -196,6 +196,14 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData) {
         renderer.EnqueuePass(viewSpaceNormalsTexturePass);
         renderer.EnqueuePass(screenSpaceOutlinePass);
+    }
+
+    protected override void Dispose(bool disposing){
+        if (disposing)
+        {
+            viewSpaceNormalsTexturePass.Release();
+            screenSpaceOutlinePass.Release();
+        }
     }
 
 }
