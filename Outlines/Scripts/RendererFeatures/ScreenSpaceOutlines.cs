@@ -151,6 +151,15 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         }
 
         public void Release(){
+#if UNITY_EDITOR
+            Object.DestroyImmediate(screenSpaceOutlineMaterial);
+            Object.DestroyImmediate(normalsMaterial);
+            Object.DestroyImmediate(occludersMaterial);
+#else
+            Object.Destroy(screenSpaceOutlineMaterial);
+            Object.Destroy(normalsMaterial);
+            Object.Destroy(occludersMaterial);
+#endif
             normals?.Release();
             temporaryBuffer?.Release();
         }
