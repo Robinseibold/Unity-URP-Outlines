@@ -117,7 +117,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         }
 
         public void Release(){
-            normals.Release();
+            normals?.Release();
         }
 
     }
