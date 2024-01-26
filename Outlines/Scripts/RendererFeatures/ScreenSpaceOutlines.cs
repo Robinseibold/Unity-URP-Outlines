@@ -111,7 +111,8 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) {
-            if (!screenSpaceOutlineMaterial || !normalsMaterial || !occludersMaterial)
+            if (!screenSpaceOutlineMaterial || !normalsMaterial || !occludersMaterial || 
+                renderingData.cameraData.renderer.cameraColorTargetHandle.rt == null || temporaryBuffer.rt == null)
                 return;
 
             CommandBuffer cmd = CommandBufferPool.Get();
