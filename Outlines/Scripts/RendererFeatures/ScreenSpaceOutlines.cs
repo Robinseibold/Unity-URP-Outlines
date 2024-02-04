@@ -83,7 +83,8 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
             RenderTextureDescriptor normalsTextureDescriptor = cameraTextureDescriptor;
-            normalsTextureDescriptor.colorFormat = normalsTextureSettings.colorFormat;
+            normalsTextureDescriptor.colorFormat = RenderTextureFormat.ARGB32;
+            normalsTextureDescriptor.depthStencilFormat = UnityEngine.Experimental.Rendering.GraphicsFormat.RGB_ETC2_UNorm;
             normalsTextureDescriptor.depthBufferBits = normalsTextureSettings.depthBufferBits;
             cmd.GetTemporaryRT(normals.id, normalsTextureDescriptor, normalsTextureSettings.filterMode);
 
@@ -150,6 +151,8 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
 
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData) {
             RenderTextureDescriptor temporaryTargetDescriptor = renderingData.cameraData.cameraTargetDescriptor;
+            temporaryTargetDescriptor.colorFormat = RenderTextureFormat.ARGB32;
+            temporaryTargetDescriptor.depthStencilFormat = UnityEngine.Experimental.Rendering.GraphicsFormat.RGB_ETC2_UNorm;
             temporaryTargetDescriptor.depthBufferBits = 0;
             cmd.GetTemporaryRT(temporaryBufferID, temporaryTargetDescriptor, FilterMode.Bilinear);
             temporaryBuffer = new RenderTargetIdentifier(temporaryBufferID);
