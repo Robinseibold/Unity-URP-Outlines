@@ -90,9 +90,6 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
             };
 
             normalsMaterial = new Material(Shader.Find("Hidden/ViewSpaceNormals"));
-
-            occludersMaterial = new Material(Shader.Find("Hidden/UnlitColor"));
-            occludersMaterial.SetColor("_Color", settings.backgroundColor);
         }
 
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData) {
