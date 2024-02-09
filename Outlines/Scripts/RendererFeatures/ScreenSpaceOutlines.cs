@@ -33,7 +33,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         
         [Header("General Scene View Space Normal Texture Settings")]
         public RenderTextureFormat colorFormat;
-        public int depthBufferBits = 16;
+        public int depthBufferBits;
         public FilterMode filterMode;
         public Color backgroundColor = Color.black;
 
