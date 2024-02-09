@@ -50,19 +50,16 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         private ScreenSpaceOutlineSettings settings;
 
         private FilteringSettings filteringSettings;
-        private FilteringSettings occluderFilteringSettings;
 
         private readonly List<ShaderTagId> shaderTagIdList;
         private readonly Material normalsMaterial;
-        private readonly Material occludersMaterial;
 
         private RTHandle normals;
         private RendererList normalsRenderersList;
-        private RendererList occuldersRenderersList;
 
         RTHandle temporaryBuffer;
 
-        public ScreenSpaceOutlinePass(RenderPassEvent renderPassEvent, LayerMask layerMask, LayerMask occluderLayerMask,
+        public ScreenSpaceOutlinePass(RenderPassEvent renderPassEvent, LayerMask layerMask,
             ScreenSpaceOutlineSettings settings) {
             this.settings = settings;
             this.renderPassEvent = renderPassEvent;
@@ -80,7 +77,6 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
             screenSpaceOutlineMaterial.SetFloat("_SteepAngleMultiplier", settings.steepAngleMultiplier);
             
             filteringSettings = new FilteringSettings(RenderQueueRange.opaque, layerMask);
-            occluderFilteringSettings = new FilteringSettings(RenderQueueRange.opaque, occluderLayerMask);
 
             shaderTagIdList = new List<ShaderTagId> {
                 new ShaderTagId("UniversalForward"),
@@ -108,7 +104,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) {
-            if (!screenSpaceOutlineMaterial || !normalsMaterial || !occludersMaterial || 
+            if (!screenSpaceOutlineMaterial || !normalsMaterial || 
                 renderingData.cameraData.renderer.cameraColorTargetHandle.rt == null || temporaryBuffer.rt == null)
                 return;
 
@@ -127,14 +123,6 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
             normalsRenderersList = context.CreateRendererList(ref normalsRenderersParams);
             cmd.DrawRendererList(normalsRenderersList);
             
-            // Occluder
-            DrawingSettings occluderSettings = drawSettings;
-            occluderSettings.overrideMaterial = occludersMaterial;
-            
-            RendererListParams occulderRenderersParams = new RendererListParams(renderingData.cullResults, occluderSettings, occluderFilteringSettings);
-            occuldersRenderersList = context.CreateRendererList(ref occulderRenderersParams);
-            cmd.DrawRendererList(occuldersRenderersList);
-            
             // Pass in RT for Outlines shader
             cmd.SetGlobalTexture(Shader.PropertyToID("_SceneViewSpaceNormals"), normals.rt);
             
@@ -151,7 +139,6 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         public void Release(){
             CoreUtils.Destroy(screenSpaceOutlineMaterial);
             CoreUtils.Destroy(normalsMaterial);
-            CoreUtils.Destroy(occludersMaterial);
             normals?.Release();
             temporaryBuffer?.Release();
         }
@@ -160,7 +147,6 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
 
     [SerializeField] private RenderPassEvent renderPassEvent = RenderPassEvent.BeforeRenderingSkybox;
     [SerializeField] private LayerMask outlinesLayerMask;
-    [SerializeField] private LayerMask outlinesOccluderLayerMask;
     
     [SerializeField] private ScreenSpaceOutlineSettings outlineSettings = new ScreenSpaceOutlineSettings();
 
@@ -170,7 +156,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         if (renderPassEvent < RenderPassEvent.BeforeRenderingPrePasses)
             renderPassEvent = RenderPassEvent.BeforeRenderingPrePasses;
 
-        screenSpaceOutlinePass = new ScreenSpaceOutlinePass(renderPassEvent, outlinesLayerMask, outlinesOccluderLayerMask, outlineSettings);
+        screenSpaceOutlinePass = new ScreenSpaceOutlinePass(renderPassEvent, outlinesLayerMask, outlineSettings);
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData) {
