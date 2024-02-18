@@ -35,7 +35,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
         public RenderTextureFormat colorFormat;
         public int depthBufferBits;
         public FilterMode filterMode;
-        public Color backgroundColor = Color.black;
+        public Color backgroundColor = Color.clear;
 
         [Header("View Space Normal Texture Object Draw Settings")]
         public PerObjectData perObjectData;
