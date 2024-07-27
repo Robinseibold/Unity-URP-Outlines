@@ -93,7 +93,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
             RenderTextureDescriptor textureDescriptor = renderingData.cameraData.cameraTargetDescriptor;
             textureDescriptor.colorFormat = settings.colorFormat;
             textureDescriptor.depthBufferBits = settings.depthBufferBits;
-            RenderingUtils.ReAllocateIfNeeded(ref normals, textureDescriptor, settings.filterMode);
+            RenderingUtils.ReAllocateIfNeeded(ref normals, textureDescriptor, settings.filterMode, wrapMode:TextureWrapMode.Clamp);
             
             // Color Buffer
             textureDescriptor.depthBufferBits = 0;
