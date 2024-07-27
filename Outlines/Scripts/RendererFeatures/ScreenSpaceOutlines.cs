@@ -148,7 +148,7 @@ public class ScreenSpaceOutlines : ScriptableRendererFeature {
     [SerializeField] private RenderPassEvent renderPassEvent = RenderPassEvent.BeforeRenderingSkybox;
     [SerializeField] private LayerMask outlinesLayerMask;
     
-    [SerializeField] private ScreenSpaceOutlineSettings outlineSettings = new ScreenSpaceOutlineSettings();
+    [SerializeField] private ScreenSpaceOutlineSettings outlineSettings;
 
     private ScreenSpaceOutlinePass screenSpaceOutlinePass;
     
